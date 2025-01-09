@@ -8,140 +8,141 @@
 
 <style>
     /* main-container {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
     } */
 
-    main{
-        overflow-x: auto;
+    main {
+    overflow-x: auto;
     }
 
     .container {
-        display: inline-flex;
+    display: inline-flex;
     }
 
     .users {
-        width: 200px;
-        background-color: #f2f2f2;
-        padding: 20px;
-        border: 1px solid #e0e0e0;
-        box-sizing: border-box;
+    width: 200px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    box-sizing: border-box;
     }
 
-        .users h3 {
-            margin-top: 0;
-            padding: 10px;
-        }
+    .users h3 {
+    margin-top: 0;
+    padding: 10px;
+    }
 
-        .users ul {
-            list-style-type: none;
-            overflow-y: auto;
-            max-height: 330px;
-            padding: 0;
-        }
+    .users ul {
+    list-style-type: none;
+    overflow-y: auto;
+    max-height: 330px;
+    padding: 0;
+    }
 
-        .users .user {
-            cursor: pointer;
-            padding: 10px;
-            margin-bottom: 5px;
-            background-color: #e0e0e0;
-        }
+    .users .user {
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #e0e0e0;
+    }
 
-            .users .user.active {
-                background-color: #ffff;
-            }
+    .users .user.active {
+    background-color: #ffff;
+    }
 
     .user.disabled {
-        pointer-events: none; /* Tıklanabilirliği devre dışı bırakır */
-        opacity: 0.5; /* Devre dışı bırakılmış gibi bir görünüm sağlar */
+    pointer-events: none; /* Tıklanabilirliği devre dışı bırakır */
+    opacity: 0.5; /* Devre dışı bırakılmış gibi bir görünüm sağlar */
     }
 
     .conversation {
-        flex: 1;
-        padding: 20px;
-        border: 1px solid #e0e0e0;
-        box-sizing: border-box;
-        min-width: 400px;
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    min-width: 400px;
     }
 
-        .conversation .header {
-            background-color: #e0e0e0;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
+    .conversation .header {
+    background-color: #e0e0e0;
+    padding: 10px;
+    margin-bottom: 20px;
+    }
 
     .messages {
-        overflow-y: auto;
-        max-height: 400px;
-        min-height: 400px;
+    overflow-y: auto;
+    max-height: 400px;
+    min-height: 400px;
     }
 
     .message {
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-        /* max-width: 70%; */
-        max-width:max-content;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    /* max-width: 70%; */
+    max-width: max-content;
     }
 
     .sent {
-        background-color: #DCF8C6;
-        align-self: flex-end;
-        margin-right: 0px !important;
-        margin-left: auto; /* flexbox alignment rule */
+    background-color: #DCF8C6;
+    align-self: flex-end;
+    margin-right: 0px !important;
+    margin-left: auto; /* flexbox alignment rule */
     }
 
     .received {
-        background-color: #ECE5DD;
+    background-color: #ECE5DD;
     }
 
     .time, .sender {
-        font-size: 12px;
-        color: #666;
+    font-size: 12px;
+    color: #666;
     }
 
     button, input, optgroup, select, textarea {
-        margin: 0;
-        font-family: inherit;
-        font-size: inherit;
-        line-height: inherit;
-        max-width: -webkit-fill-available;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    max-width: -webkit-fill-available;
     }
 
     .input-area {
-        margin-top: 20px;
+    margin-top: 20px;
     }
 
-        .input-area input {
-            width: calc(100% - 80px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px 0 0 5px;
-        }
+    .input-area input {
+    width: calc(100% - 80px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+    }
 
-        .input-area button {
-            width: 70px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-            float: right;
-        }
+    .input-area button {
+    width: 70px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    float: right;
+    }
 
-            .input-area button:hover {
-                background-color: #45a049;
-            }
+    .input-area button:hover {
+    background-color: #45a049;
+    }
 
     .addGroup {
-        margin-top: 10px;
-        /* background-color: #e0e0e0; */
-        /* border: none; */
-        /* border-radius: 0 5px 5px 0; */
+    margin-top: 10px;
+    /* background-color: #e0e0e0; */
+    /* border: none; */
+    /* border-radius: 0 5px 5px 0; */
     }
 </style>
+#<!-- razor html -->
 @if (!IsAuthenticate)
 {
     <Toasts class="p-3" Messages="AuthenticationMessages" AutoHide="true" StackLength="3" Placement="ToastsPlacement.TopRight" />
@@ -150,10 +151,11 @@
         <Card Color="CardColor.Light" Class="mb-4" Style="width:18rem;">
             <CardHeader>Chat Room</CardHeader>
             <CardBody>
-                <CardTitle>Giriş Yap</CardTitle>
-                    <InputText style="padding: 10px 10px 10px 5px; display: block; width: 300px; border: none; border-bottom: 1px solid #757575;" @bind-Value="CallerUsername" placeholder="Kullanıcı Adı"></InputText>
+                <CardTitle>Authorization</CardTitle>
+                <InputText style="padding: 10px 10px 10px 5px; display: block; width: 300px; border: none; border-bottom: 1px solid #757575;" @bind-Value="CallerUsername" placeholder="Username"></InputText>
+                <InputText style="padding: 10px 10px 10px 5px; display: block; width: 300px; border: none; border-bottom: 1px solid #757575;" @bind-Value="RoomId" placeholder="Room Id"></InputText>
                 @* <button @onclick=SignIn>Giriş Yap</button> *@
-                <Button class="addGroup" Color="ButtonColor.Primary" @onclick=SignIn> Giriş Yap </Button>
+                <Button class="addGroup" Color="ButtonColor.Primary" @onclick=SignIn> Authorize </Button>
             </CardBody>
         </Card>
     </div>
@@ -162,96 +164,97 @@ else
 {
     @* <div class="main-container"> *@
 
-        <Toasts class="p-3" Messages="NotificationMessages" AutoHide="true" StackLength="3" Placement="ToastsPlacement.TopRight" />
+    <Toasts class="p-3" Messages="NotificationMessages" AutoHide="true" StackLength="3" Placement="ToastsPlacement.TopRight" />
 
-        
-        <div class="container">
 
-            @* Sistemdeki odalar/gruplar listeleniyor.. *@
-            <div class="users">
-                <div>
+    <div class="container">
+
+        @* Sistemdeki odalar/gruplar listeleniyor.. *@
+        <div class="users">
+            <div>
                 <input style="padding: 10px 10px 10px 5px; display: block; width: 300px; border: none; border-bottom: 1px solid #757575;" type="text" @bind-value="GroupNameText" placeholder="Oda Adı">
-                    <Button class="addGroup" Color="ButtonColor.Primary" @onclick=@(() => AddGroup(GroupNameText))> Oda Ekle </Button>
-                    @* <button class="addGroup" @onclick=@(() => AddGroup(GroupNameText))>Grup Ekle</button> *@
-                </div>
-                <h3>Odalar</h3>
+                <Button class="addGroup" Color="ButtonColor.Primary" @onclick=@(() => AddGroup(GroupNameText))> Oda Ekle </Button>
+                @* <button class="addGroup" @onclick=@(() => AddGroup(GroupNameText))>Grup Ekle</button> *@
+            </div>
+            <h3>Odalar</h3>
+            <ul>
+                @foreach (var group in Groups)
+                {
+                    <Tooltip Class="me-4" Title="Odaya girmek ve üyeleri görüntülemek için tıkla." Placement="TooltipPlacement.Right">
+                        <li class="user @(group == selectedGroup ? "active" : "")" @onclick="@(() => SelectGroup(group))">@group.GroupName</li>
+                    </Tooltip>
+                }
+            </ul>
+        </div>
+        @* Отобразятся клиенты, включенные в выбранную комнату/группу... *@
+        <div class="users" style="display: @displayStyle">
+            @if (!string.IsNullOrEmpty(selectedGroup.GroupName))
+            {
+                <h3>@selectedGroup.GroupName Üyeleri </h3>
                 <ul>
-                    @foreach (var group in Groups)
+                    @foreach (var client in ClientsOfGroups)
                     {
-                        <Tooltip Class="me-4" Title="Odaya girmek ve üyeleri görüntülemek için tıkla." Placement="TooltipPlacement.Right">
-                            <li class="user @(group == selectedGroup ? "active" : "")" @onclick="@(() => SelectGroup(group))">@group.GroupName</li>
-                        </Tooltip>
+                        <li class="user @(client.Username.Equals(CallerUsername) ? "disabled" : "")">@client.Username</li>
                     }
                 </ul>
-            </div>
-            @* Seçili oda/gruba dahil olan clientlar listeleniyor.. *@
-            <div class="users" style="display: @displayStyle">
-                @if (!string.IsNullOrEmpty(selectedGroup.GroupName))
+            }
+        </div>
+
+        @* Клиенты в системе перечислены.. *@
+        <div class="users">
+            <h3>Tüm Kullanıcılar</h3>
+            <ul>
+                @foreach (var client in Clients)
                 {
-                    <h3>@selectedGroup.GroupName Üyeleri </h3>
-                    <ul>
-                        @foreach (var client in ClientsOfGroups)
+                    <li class="user @(client == selectedClient ? "active" : "") @(client.Username.Equals(CallerUsername) ? "disabled" : "")" @onclick="@(() => SelectClient(client))">@client.Username</li>
+                }
+            </ul>
+        </div>
+
+        @* В списке отображаются сообщения вызывающего абонента с выбранными клиентами.. *@
+        <div class="conversation">
+            @if (selectedClient.Username != null)
+            {
+                <div class="header">
+                    <h3>@selectedClient.Username</h3>
+                </div>
+            }
+            else if (selectedGroup.GroupName != null)
+            {
+                <div class="header">
+                    <h3>@selectedGroup.GroupName</h3>
+                </div>
+            }
+            <div class="messages">
+                @for (int i = 0; i < SelectedUserMessages.Count; i++)
+                {
+                    <div class="message @(SelectedUserMessages[i].IsSenderReceiver ? "sent" : "received")">
+                        @if (SelectedUserMessages[i].IsGroupMessage && !SelectedUserMessages[i].IsSenderReceiver)
                         {
-                            <li class="user @(client.Username.Equals(CallerUsername) ? "disabled" : "")">@client.Username</li>
+                            <span class="sender">Gönderen : @SelectedUserMessages[i].SenderClientUsername</span>
                         }
-                    </ul>
-                }
-            </div>
-
-            @* Sistemdeki clientlar listeleniyor.. *@
-            <div class="users">
-                <h3>Tüm Kullanıcılar</h3>
-                <ul>
-                    @foreach (var client in Clients)
-                    {
-                        <li class="user @(client == selectedClient ? "active" : "") @(client.Username.Equals(CallerUsername) ? "disabled" : "")" @onclick="@(() => SelectClient(client))"  >@client.Username</li>
-                    }
-                </ul>
-            </div>
-
-            @* Callerın seçili clientlarla olan mesajları listeleniyor.. *@
-            <div class="conversation">
-                @if (selectedClient.Username != null)
-                {
-                    <div class="header">
-                        <h3>@selectedClient.Username</h3>
+                        <p>@SelectedUserMessages[i].Message</p>
+                        <span class="time">@SelectedUserMessages[i].CreatedDate.ToShortTimeString()</span>
                     </div>
                 }
-                else if (selectedGroup.GroupName != null)
-                {
-                    <div class="header">
-                        <h3>@selectedGroup.GroupName</h3>
-                    </div>
-                }
-                <div class="messages">
-                    @for (int i = 0; i < SelectedUserMessages.Count; i++)
-                    {
-                        <div class="message @(SelectedUserMessages[i].IsSenderReceiver ? "sent" : "received")">
-                            @if (SelectedUserMessages[i].IsGroupMessage && !SelectedUserMessages[i].IsSenderReceiver)
-                            {
-                                <span class="sender">Gönderen : @SelectedUserMessages[i].SenderClientUsername</span>
-                            }
-                            <p>@SelectedUserMessages[i].Message</p>
-                            <span class="time">@SelectedUserMessages[i].CreatedDate.ToShortTimeString()</span>
-                        </div>
-                    }
-                </div>
-                <div class="input-area">
-                    <input @onkeyup="@(e => KeyHandler(e))" type="text" @bind-value="TextMessage" placeholder="Mesajınızı buraya yazın..">
-                    <button @onclick=@(() => SendMessageAsync(TextMessage, selectedGroup.GroupName))>Gönder</button>
-                </div>
+            </div>
+            <div class="input-area">
+                <input @onkeyup="@(e => KeyHandler(e))" type="text" @bind-value="TextMessage" placeholder="Mesajınızı buraya yazın..">
+                <button @onclick=@(() => SendMessageAsync(TextMessage, selectedGroup.GroupName))>Gönder</button>
             </div>
         </div>
+    </div>
     @* </div> *@
 }
-
+<!-- #endregion -->
 @code {
-    private string displayStyle = "none"; // clientsOfGroupu listeleyen alanın görünürlüğü başlangıç için gizleniyor..
+    private string displayStyle = "none"; // clientsOfGroupu Видимость поля со списком изначально скрыта.
     List<ToastMessage> NotificationMessages = new List<ToastMessage>();
 
     List<ClientMessage> Messages = new List<ClientMessage>(); // Clientla alakalı mesajları tutacak olan liste..
 
     public string CallerUsername { get; set; } = String.Empty; // Kişinin login olurken girdiği username bilgisi..
+    public string RoomId { get; set; } = String.Empty; // Id комнаты, в которую должен войти пользователь
     public string TextMessage { get; set; } = String.Empty; // Gönderilecek mesaj
     public string GroupNameText { get; set; } = String.Empty; // Gönderilecek mesaj
 
@@ -347,7 +350,7 @@ else
         });
 
         // Bir callerın sistemdeki herhangi bir clienta mesaj atma durumunda server tarafından tetiklenecek..
-        hubConnection.On<string, Client, Client?, string?>("receiveMessage", async (message, senderClient, client, groupName ) =>
+        hubConnection.On<string, Client, Client?, string?>("receiveMessage", async (message, senderClient, client, groupName) =>
         {
             // Bir clientla mesajlaşılıyorsa..
             if (client != null)
@@ -381,7 +384,7 @@ else
         Client client = Clients.FirstOrDefault(c => c.Username == username);
         return (client != null) ? false : true;
     }
-    
+
     // Girilen groupName varolan gruplardan biri tarafından kullanılıyorsa false, kullanılmıyorsa true döndürecek..
     public async Task<bool> CheckGroupNameAsync(string groupName)
     {
@@ -394,7 +397,7 @@ else
     // Login işlemi..
     async Task SignIn()
     {
-        if (!string.IsNullOrEmpty(CallerUsername))
+        if (!(string.IsNullOrEmpty(CallerUsername) && string.IsNullOrEmpty(RoomId)))
         {
             bool result = await CheckUsernameAsync(CallerUsername);
             if (result) // Giriş başarılı
@@ -408,15 +411,15 @@ else
             {
                 // Usernamein kullanımda olduğuna dair uyarı verilecek..
                 AuthenticationMessages.Add(new ToastMessage()
-                {
+                    {
                         Type = ToastType.Warning,
                         Title = "Giriş Başarısız",
                         HelpText = $"{DateTime.Now}",
                         Message = $"Kullanıcı adı zaten alınmış!",
-                });
+                    });
             }
         }
-        
+
     }
 
     List<ClientMessage> SelectedUserMessages = new List<ClientMessage>(); // Seçilen clientla ve callerla alakalı mesajları tutacak olan liste..
@@ -441,7 +444,7 @@ else
             }
         }
 
-        #region Filtreleme için alternatif kod
+        #region [Альтернативный код для фильтрации]
         // // Mesajları filtrelemek için kullanılacak koşulları önceden belirliyorum..
         // Func<ClientMessage, bool> filterCondition = msg =>
         //     (IsGroupMessage && msg.IsGroupMessage && msg.ReceiverClientUsernameOrGroupName == receiverClientNameOrGroupName) ||
@@ -521,20 +524,22 @@ else
             if (result) // Oda adı kullanılabilirse..
             {
                 // Serverdaki AddGroupAsync methodu tetiklenerek grup oluşturma işlemi gerçekleştiriliyor..
-                await hubConnection.SendAsync("AddGroupAsync", groupNameText);
+                
+                await hubConnection.SendAsync("AddGroupAsync", Guid.NewGuid());
 
                 // Grup oluşturma inputu temizleniyor..
                 groupNameText = string.Empty;
-            }else
+            }
+            else
             {
                 // Usernamein kullanımda olduğuna dair uyarı verilecek..
                 NotificationMessages.Add(new ToastMessage()
-                {
+                    {
                         Type = ToastType.Warning,
                         Title = "İşlem Başarısız",
                         HelpText = $"{DateTime.Now}",
                         Message = $"Bu isimde bir oda zaten var!",
-                });
+                    });
             }
         }
     }
@@ -545,7 +550,7 @@ else
         // Serverdaki AddClientToGroupAsync methodu tetiklenerek seçilen gruba callerın dahil olması sağlanıyor..
         await hubConnection.SendAsync("AddClientToGroupAsync", groupName);
     }
-    
+
     // Tetiklendiğinde ilgili gruba ait tüm clientların listesini döndürür....
     async Task GetClientsOfGroup(string groupName)
     {

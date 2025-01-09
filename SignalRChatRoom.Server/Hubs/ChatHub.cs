@@ -45,6 +45,7 @@ namespace SignalRChatRoom.Server.Hubs
         // Grup oluşturma işlemini herhangi bir client yapacağı için ilk etapta gruba, grubu oluşturan client (caller) subscribe edilir..
         public async Task AddGroupAsync(string groupName)
         {
+            
             // Grupların içinde hangi clientların olduğunun bilgisi server tarafından tutuluyor. ViewModel vs. kullanmaya gerek yok..
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
