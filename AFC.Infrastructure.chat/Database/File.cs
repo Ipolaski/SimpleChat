@@ -9,17 +9,15 @@ namespace AFC.Infrastructure.chat.Database
     public class File
     {
         [Required]
-        [Column(TypeName = "uniqueidentifier")]
+        [Column(TypeName = "UUID")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid FileId { get; set; }
-
+        public Guid Id { get; set; }
         /// <summary>
         /// Хранит файл в двоичной кодировке
         /// </summary>
         [Required]
-        [Column(TypeName = "varbinary")]
+        //[Column(TypeName = "varbinary")]
         public required byte[] FileData { get; set; }
-
         /// <summary>
         /// Дата добавления файла. 
         /// Необходима для автоочистки таблицы по сроку давности файлов.

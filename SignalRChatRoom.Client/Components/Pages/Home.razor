@@ -301,7 +301,7 @@ else
         // Sisteme yeni bir kullanıcı dahil olduğunda tüm clientlara bildirecek.. Server tarafından tetikleniyor..
         hubConnection.On<string>("clientJoined", async (username) =>
         {
-            NotificationMessages.Add(CreateToastMessage(ToastType.Info, $"{username} adlı kullanıcı sisteme giriş yaptı."));
+            NotificationMessages.Add(CreateToastMessage(ToastType.Info, $"{username} Присоединился."));
 
             await InvokeAsync(StateHasChanged); // UI güncellemesi için InvokeAsync metodu çağırılıyor..
         });
@@ -309,7 +309,7 @@ else
         // Sistemdeki bir kullanıcı bağlantıyı kopardığı zaman tetiklenecek.. Server tarafından tetikleniyor..
         hubConnection.On<string>("clientLeaved", async (username) =>
         {
-            NotificationMessages.Add(CreateToastMessage(ToastType.Info, $"{username} adlı kullanıcının bağlantısı koptu."));
+            NotificationMessages.Add(CreateToastMessage(ToastType.Info, $"{username} Покинул"));
 
             await InvokeAsync(StateHasChanged); // UI güncellemesi için InvokeAsync metodu çağırılıyor..
         });

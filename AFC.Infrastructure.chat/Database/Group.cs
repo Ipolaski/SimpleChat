@@ -9,11 +9,12 @@ namespace AFC.Infrastructure.chat.Database
     public class Group
     {
         [Required]
-        [Column(TypeName = "uniqueidentifier")]
+        [Column(TypeName = "UUID")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid GroupId { get; set; }
-
-        [Column(TypeName = "nvarchar(50)")]
-        public string? GroupName { get; set; }
-    }
+        public Guid Id { get; set; }
+        public string? Name { get; set; }
+		public User Owner { get; set; }
+		public Guid OwnerId { get; set; }
+		public ICollection<User> Members { get; set; }
+	}
 }

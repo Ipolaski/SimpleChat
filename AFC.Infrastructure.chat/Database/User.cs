@@ -9,16 +9,18 @@ namespace AFC.Infrastructure.chat.Database
     public class User
     {
         [Required]
-        [Column(TypeName = "uniqueidentifier")]
+        [Column(TypeName = "UUID")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid UserId { get; set; }
-
+        public Guid Id { get; set; }
         [Required]
-        [Column(TypeName = "nvarchar(50)")]
-        public required string UserName { get; set; }
-
+        public required string Name { get; set; }
         [Required]
-        [Column(TypeName = "nvarchar(50)")]
         public required string Password { get; set; }
-    }
+		[Required]
+		[Column()]
+		public required bool IsAdmin { get; set; }
+
+		public ICollection<Group> OwnedGroups{ get; set; }
+		public ICollection<Group> BeInGroups { get; set; }
+	}
 }

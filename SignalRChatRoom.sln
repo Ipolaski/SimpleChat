@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalRChatRoom.Client", "S
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ChatBase", "ChatBase\ChatBase.sqlproj", "{0FE47885-4AE2-4221-9F33-8BAB02333627}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFC.database.chat", "AFC.database.chat\AFC.database.chat.csproj", "{86A423A1-6CE5-4398-98BD-9CE8D5D911BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AFC.database.chat", "AFC.database.chat\AFC.database.chat.csproj", "{86A423A1-6CE5-4398-98BD-9CE8D5D911BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AFC.Infrastructure.chat", "AFC.Infrastructure.chat\AFC.Infrastructure.chat.csproj", "{B81F47BF-7B60-4DD1-B796-0F50CB16D100}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AFC.Infrastructure.chat", "AFC.Infrastructure.chat\AFC.Infrastructure.chat.csproj", "{B81F47BF-7B60-4DD1-B796-0F50CB16D100}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aboba.Infrastructure.Api", "aboba.Infrastructure.Api\aboba.Infrastructure.Api.csproj", "{6F306DC0-728C-4129-9D0D-AE15C40A8E52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{B81F47BF-7B60-4DD1-B796-0F50CB16D100}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B81F47BF-7B60-4DD1-B796-0F50CB16D100}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B81F47BF-7B60-4DD1-B796-0F50CB16D100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F306DC0-728C-4129-9D0D-AE15C40A8E52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F306DC0-728C-4129-9D0D-AE15C40A8E52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F306DC0-728C-4129-9D0D-AE15C40A8E52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F306DC0-728C-4129-9D0D-AE15C40A8E52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

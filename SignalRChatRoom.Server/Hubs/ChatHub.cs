@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using SignalRChatRoom.Server.InMemoryData;
 using SignalRChatRoom.Server.Models;
+using SignalRSwaggerGen.Attributes;
 
 namespace SignalRChatRoom.Server.Hubs
 {
-    // Bir sınıfın hub sınıfı olduğunu anlamak ve sorumlulukları yüklemek için hub sınıfından türetilmesi gerekir..
-    public class ChatHub : Hub
+	// Bir sınıfın hub sınıfı olduğunu anlamak ve sorumlulukları yüklemek için hub sınıfından türetilmesi gerekir..
+	[SignalRHub]
+	public class ChatHub : Hub
     {
         public async Task GetUsernameAsync(string username)
         {
@@ -30,8 +33,9 @@ namespace SignalRChatRoom.Server.Hubs
             await Clients.All.SendAsync("clients", ClientSource.Clients);
         }
 
-        // Caller bir clienta mesaj gönderecekse tetiklenir..
-        public async Task SendMessageAsync(string message, Client client)
+		// Caller bir clienta mesaj gönderecekse tetiklenir..
+		
+		public async Task SendMessageAsync(string message, Client client)
         {
             // Caller bilgisi alınıyor..
             Client senderClient = ClientSource.Clients.FirstOrDefault(c => c.ConnectionId == Context.ConnectionId);
@@ -95,9 +99,9 @@ namespace SignalRChatRoom.Server.Hubs
                 }
             }
         }
-
-        // Parametrede bildirilen odaya callerı dahil eder..
-        public async Task AddClientToGroupAsync(string groupName)
+		
+		// Parametrede bildirilen odaya callerı dahil eder..
+		public async Task AddClientToGroupAsync(string groupName)
         {
             // İstekte bulunan (caller) client bilgisi alınıyor..
             Client client = ClientSource.Clients.FirstOrDefault(c => c.ConnectionId == Context.ConnectionId);
@@ -129,9 +133,9 @@ namespace SignalRChatRoom.Server.Hubs
             //await Clients.Caller.SendAsync("clientsOfGroup", group.Clients);
             await Clients.Groups(groupName).SendAsync("clientsOfGroup", group.Clients, group.GroupName);
         }
-
-        // İlgili gruba mesajı gönderir..
-        public async Task SendMessageToGroupAsync(string groupName, string message)
+		[Authorize]
+		// İlgili gruba mesajı gönderir..
+		public async Task SendMessageToGroupAsync(string groupName, string message)
         {
             //Clienttaki receiveMessage fonk. tetiklenir. Mesaj, senderClient ve groupName değerleri döndürülür.. 
             //receiveMessage fonk.. 4 değer bekliyor.. 3. dönüş değeri bir Client beklemekte, grup mesajlaşmalarında bir clienta gönderilmediği için bu değer null olarak döndürülüyor..

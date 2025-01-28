@@ -12,15 +12,28 @@ namespace AFC.database.chat
         public DbSet<GroupConnection> GroupConnections { get; set; }
         public DbSet<Messages> Messagess { get; set; }
 
-        public ApplicationContext() 
-        {
+        public ApplicationContext( DbContextOptions<ApplicationContext> options )
+			: base( options )
+		{
             Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(ConfigurationManager.AppSettings["PostgressConnectionString"]);
-            base.OnConfiguring(optionsBuilder);
+            //optionsBuilder.UseNpgsql(ConfigurationManager.AppSettings["PostgressConnectionString"]);
+            //base.OnConfiguring(optionsBuilder);
         }
-    }
+
+		protected override void OnModelCreating( ModelBuilder modelBuilder )
+		{
+			modelBuilder.Entity<User>()
+				.HasMany( a => a.OwnedGroups )
+				.WithOne( b => b.Owner )
+				.HasForeignKey( b => b.OwnerId );
+
+			modelBuilder.Entity<User>()
+				.HasMany( a => a.BeInGroups )
+				.WithMany( b => b.Members );
+		}
+	}
 }
