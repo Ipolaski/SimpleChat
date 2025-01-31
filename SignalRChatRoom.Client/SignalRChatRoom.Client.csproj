@@ -4,11 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazor.Bootstrap" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\AFC.Infrastructure.Api\AFC.Infrastructure.Api.csproj" />
+    <ProjectReference Include="..\Infrastructure\AFC.Infrastructure.Database\AFC.Infrastructure.Database.csproj" />
+    <ProjectReference Include="..\SignalRChatRoom.Server\SignalRChatRoom.Server.csproj" />
   </ItemGroup>
 
 </Project>

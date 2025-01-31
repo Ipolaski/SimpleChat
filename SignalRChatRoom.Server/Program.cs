@@ -1,6 +1,5 @@
 ﻿using AccountServiceGCA.Application.AuthorizeOptions;
 using System.Configuration;
-using AFC.database.chat;
 using Microsoft.EntityFrameworkCore;
 using SignalRChatRoom.Server.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Options;
 using System;
+using Microsoft.Extensions.Hosting;
+using Infrastructure.AFC.Infrastructure.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,9 +50,11 @@ builder.Services.AddSwaggerGen( swagger =>
 		}
 	} );
 } );
-
+var config = builder.Configuration.GetSection("PostgressConnectionString").Value;
 builder.Services.AddSignalR();
-builder.Services.AddDbContext<ApplicationContext>( options => options.UseNpgsql( builder.Configuration.GetSection( "ConnectionString" ).Value ) );
+builder.Services.AddDbContext<ApplicationContext>(options => 
+    options.UseNpgsql(builder.Configuration.GetSection("PostgressConnectionString").Value ) );
+
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<ChatsManageRepository>();
 builder.Services.AddSingleton( builder.Configuration.GetSection( "AuthOptions" ).Get<AuthOptions>() );
@@ -92,12 +95,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.UseEndpoints( endpoints =>
-{
-	app.MapHub<ChatHub>( "/chathub" ); // Замените YourHub на имя вашего хаба
-} );
+//app.UseEndpoints( endpoints =>
+//{
+//	app.MapHub<ChatHub>( "/chathub" ); // Замените YourHub на имя вашего хаба
+//} );
 
 app.MapHub<ChatHub>("/chathub");
-
 
 app.Run();
