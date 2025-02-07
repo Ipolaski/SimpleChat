@@ -17,7 +17,7 @@ namespace Infrastructure.AFC.Infrastructure.Database.Entities
         /// </summary>
         [Required]
         //[Column(TypeName = "varbinary")]
-        public required byte[] FileData { get; set; }
+        public required string FilePath { get; set; }
         /// <summary>
         /// Дата добавления файла. 
         /// Необходима для автоочистки таблицы по сроку давности файлов.

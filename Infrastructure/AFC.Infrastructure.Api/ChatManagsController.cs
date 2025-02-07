@@ -68,9 +68,9 @@ namespace AFC.Infrastructure.Api
         [Route("GetMessages")]
         //[SwaggerResponse( StatusCodes.Status200OK, "GET 200 aboba", typeof( List<abobaModel> ) )]
         //[SwaggerResponse( StatusCodes.Status400BadRequest, "GET 400 aboba", typeof( List<abobaModel> ) )]
-        public async Task<IActionResult> GetMessagesAsync([FromBody] GetChatMessagesByGroupIdRequest request)
+        public async Task<IActionResult> GetMessagesSortByDecAsync([FromBody] GetChatMessagesByGroupIdRequest request)
         {
-            List<Message> groups = await _chateManageRepository.GetAllChatMessagesAsync(request.GroupId);
+            List<Message> groups = await _chateManageRepository.GetAllChatMessagesSortByDecAsync(request.GroupId);
 
             return Ok(groups);
         }

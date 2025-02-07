@@ -5,6 +5,7 @@
 @using Group = SignalRChatRoom.Server.Models.Group;
 @using DbGroup = Infrastructure.AFC.Infrastructure.Database.Entities.Group;
 @using Client = SignalRChatRoom.Server.Models.Client;
+@using System.Text.RegularExpressions
 @implements IAsyncDisposable
 
 @rendermode InteractiveServer
@@ -13,10 +14,10 @@
 <!-- #region [style] -->
 <style>
     /* main-container {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    } */
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        } */
 
     main {
         overflow-x: auto;
@@ -158,7 +159,7 @@
             <CardHeader class="text-center">Chat Room</CardHeader>
             <CardBody>
                 <CardTitle class="mx-auto text-center">Authorization</CardTitle>
-                <InputText class="mx-auto" style="padding: 10px 10px 10px 5px; display: block; width: w-auto; border: none; border-bottom: 1px solid #757575;" @bind-Value="CallerUsername" placeholder="Username"></InputText>
+                <InputText class="mx-auto" style="padding: 10px 10px 10px 5px; display: block; width: w-auto; border: none; border-bottom: 1px solid #757575;" @bind-value="CallerUsername" placeholder="Username"></InputText>
                 <InputText class="mx-auto" style="padding: 10px 10px 10px 5px; display: block; width: w-auto; border: none; border-bottom: 1px solid #757575;" @bind-Value="RoomId" placeholder="Room Id"></InputText>
                 <span class="align-items-center w-100">
                     <Button class="addGroup" style="margin-left: 30%" Color="ButtonColor.Primary" @onclick=SignIn> Authorize </Button>
@@ -177,14 +178,15 @@ else
     <div class="container">
 
         @* Sistemdeki odalar/gruplar listeleniyor.. *@
-        <div class="users" @onload=@(()=> {LoadMessageHistory(GroupNameText); SelectGroup(FindGroupByName(GroupNameText));})>
+        @* <div class="users" onloadstart=(() =>
+            )>
             <div>
                 <input class="mx-auto position-relative" style="max-width: -moz-available; padding: 10px 10px 10px 5px; display: block; border: none; border-bottom: 1px solid #757575;" type="text" @bind-value="GroupNameText" placeholder="Номер комнаты">
-                <Button class=" mx-auto addGroup" Color="ButtonColor.Primary"> Перейти в комнату </Button>
-                @* @onclick=@(() => AddGroup(GroupNameText)) *@
-            </div>
-            @* <h3>Номера</h3> *@
-            <ul>
+                <Button class=" mx-auto addGroup" Color="ButtonColor.Primary"> Перейти в комнату </Button> *@
+        @* @onclick=@(() => AddGroup(GroupNameText)) *@
+        @* </div> *@
+        @* <h3>Номера</h3> *@
+        @* <ul>
                 @foreach (var group in Groups)
                 {
                     <Tooltip Class="me-4" Title="Нажмите, чтобы ввести комнату и просмотреть участников." Placement="TooltipPlacement.Right">
@@ -192,28 +194,28 @@ else
                     </Tooltip>
                 }
             </ul>
-        </div>
+        </div> *@
         @* Отобразятся клиенты, включенные в выбранную комнату/группу... *@
-        <div class="users" style="display: @displayStyle">
+        @*         <div class="users" style="display: @displayStyle">
             @if (!string.IsNullOrEmpty(selectedGroup.GroupName))
             {
                 <h3>@selectedGroup.GroupName В группе </h3>
                 <ul>
                     @foreach (var client in ClientsOfGroups)
                     {
-                        <li class="user @(client.Username.Equals(CallerUsername) ? "disabled" : "")">@client.Username</li>
+                        <li class="user disabled">@client.Username</li>
                     }
                 </ul>
             }
-        </div>
+        </div> *@
 
         @* Клиенты в системе перечислены.. *@
         <div class="users min-vw-10">
             <h4 class="mx-auto">Все пользователи:</h4>
             <ul>
-                @foreach (var client in Clients)
+                @foreach (var client in ClientsOfGroups)
                 {
-                    <li class="user @(client == selectedClient ? "active" : "") @(client.Username.Equals(CallerUsername) ? "disabled" : "")" @onclick="@(() => SelectClient(client))">@client.Username</li>
+                    <li class="user disabled">@client.Username</li>
                 }
             </ul>
         </div>
@@ -245,19 +247,43 @@ else
                     </div>
                 } *@
 
-                @for (int i = 0; i < MessageHistory.Count; i++)
+                @for (int i = 0; i < MessageHistory?.Count; i++)
                 {
                     <div class="message @(MessageHistory[i].Username == CallerUsername ? "sent" : "received")">
 
                         <span class="sender">Отправитель : @MessageHistory[i].Username</span>
                         <p>@MessageHistory[i].Text</p>
-                        <span class="time">@MessageHistory[i].DateTime.ToShortTimeString()</span>
+                        <span class="time">@MessageHistory[i].DateTime.ToLocalTime()</span>
                     </div>
                 }
             </div>
             <div class="input-area">
                 <input @onkeyup="@(e => KeyHandler(e))" type="text" @bind-value="TextMessage" placeholder="Напишите здесь свое сообщение ..">
+                @* <input style="max-width:50px" type="file" onchange=@LoadFileFromUser   placeholder=".."> *@
+                <InputFile @ref="_inputFile" OnChange="LoadFileFromUser" accept=".jpg, .jpeg, png"></InputFile>
                 <button @onclick=@(() => SendMessageAsync(TextMessage, RoomId))>Отправить</button>
+            </div>
+            <div>
+                @if (isLoading)
+                {
+                    <p>Uploading...</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var file in loadedFiles)
+                        {
+                            <li>
+                                <ul>
+                                    <li>Name: @file.Name</li>
+                                    <li>Last modified: @file.LastModified.ToString()</li>
+                                    <li>Size (bytes): @file.Size</li>
+                                    <li>Content type: @file.ContentType</li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                }
             </div>
         </div>
     </div>
@@ -266,14 +292,46 @@ else
 <!-- #endregion -->
 <!-- #region [code] -->
 @code {
-    private string displayStyle = "none"; // clientsOfGroupu Видимость поля со списком изначально скрыта.
-    List<ToastMessage> NotificationMessages = new List<ToastMessage>();
+    #region [variables]
+    const byte maxAllowedFiles = 3;
 
-    List<ClientMessage> Messages = new List<ClientMessage>(); // Clientla alakalı mesajları tutacak olan liste..
-    List<Message> MessageHistory = new();
-    public string CallerUsername { get; set; } = String.Empty; // Kişinin login olurken girdiği username bilgisi..
-    public string RoomId { get; set; } = String.Empty; // Id комнаты, в которую должен войти пользователь
-    public string TextMessage { get; set; } = String.Empty; // Gönderilecek mesaj
+    /// <summary>
+    /// Установлено значение в 3 МБ
+    /// </summary>
+    const long maxFileSize = 3145728;
+
+    /// <summary>
+    /// Запрещены ссылки, тайские телефоны и логины из мессенджеров и соц сетей
+    /// </summary>
+    const string pattern = @"([a-z]+:\/\/)|((([a-z0-9\-]+\.)+([a-z]2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|me|name|nato|net|org|pro|travel|local|internal|ad|ae|af|ag|ai|al|am|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bl|bm|bn|bo|bq|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cu|cv|cw|cx|cy|cz|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mf|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|ss|st|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|za|zm|zw))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@\/?]*)?)(\s+|$)/|(@(\w+)?(\d+)?)|(\+? ?66 ?(\d+))|(0 ?(\d+)?)";
+
+    private string displayStyle = "none"; // clientsOfGroupu Видимость поля со списком изначально скрыта.
+    private List<ToastMessage> NotificationMessages = new List<ToastMessage>();
+    private List<ClientMessage> Messages = new List<ClientMessage>(); // Clientla alakalı mesajları tutacak olan liste..
+    private List<Message> MessageHistory = new();
+    private HubConnection? hubConnection;
+    private List<ToastMessage> AuthenticationMessages = new List<ToastMessage>();
+    private List<ClientMessage> SelectedUserMessages = new List<ClientMessage>();
+    private Client selectedClient = new Client();
+    private Group selectedGroup = new Group();
+    private bool isLoading = false;
+    private List<IBrowserFile> loadedFiles = new();
+    #endregion
+
+    #region [properties]
+    private string CallerUsername { get; set; } = String.Empty; // Kişinin login olurken girdiği username bilgisi..
+    /// <summary>
+    /// ID чата который ввёл пользователь
+    /// </summary>
+    private string RoomId { get; set; } = String.Empty; // Id комнаты, в которую должен войти пользователь
+
+    /// <summary>
+    /// Отправляемое пользователем сообщение
+    /// </summary>
+    private string TextMessage { get; set; } = String.Empty; // Gönderilecek mesaj
+    private InputFile? _inputFile { get; set; }
+    private ElementReference previewImageElement;
+
     string groupNameText = String.Empty;
     public string GroupNameText
     {
@@ -292,16 +350,16 @@ else
         }
     }
 
-    // Client giriş yapmış mı yapmamış mı kontrol ediliyor.. (Veritabanı bağlantısı yok, veriler InMemoryde tutuluyor. Sadece username bilgisi girip girmediği kontrol ediliyor..)
+    /// <summary>
+    /// Выполнен ли вход в чат под логином
+    /// </summary>
     public bool IsAuthenticate { get; set; } = false;
 
-    private List<Client> ClientsOfGroups { get; set; } = new List<Client>(); // Belirli bir gruptaki clientları tutan liste..
-    private List<Client> Clients { get; set; } = new List<Client>(); // Sisteme giriş yapan tüm clientların bilgisini tutan liste..
-                                                                     // class Client()
-                                                                     // {
-                                                                     //     public string ConnectionId { get; set; }
-                                                                     //     public string Username { get; set; }
-                                                                     // }
+    private List<Client> ClientsOfGroups { get; set; } = new List<Client>();
+    private List<Client> Clients { get; set; } = new List<Client>();
+    private List<Server.Models.Group> Groups { get; set; } = new List<Server.Models.Group>();
+    #endregion
+
     class ClientMessage()
     {
         public string ReceiverClientUsernameOrGroupName { get; set; } = string.Empty;
@@ -311,19 +369,7 @@ else
         public bool IsSenderReceiver { get; set; } = false;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
     }
-    private List<Server.Models.Group> Groups { get; set; } = new List<Server.Models.Group>(); // Sistemde oluşturulan odaların bilgisini tutan liste..
 
-    // private List<Group> Groups { get; set; } = new List<Group>(); // Sistemde oluşturulan odaların bilgisini tutan liste..
-    // class Group()
-    // {
-    //     public string GroupName { get; set; }
-    //     public List<Client> Clients { get; } = new List<Client>();
-    // }
-
-    // SignalR hub'ına bağlantıyı sağlar..
-    private HubConnection hubConnection;
-
-    // Bileşen başlatıldığında yapılacaklar
     protected override async Task OnInitializedAsync()
     {
         // SignalR hubına bağlantı oluşturur..
@@ -370,18 +416,28 @@ else
         });
 
         // Sisteme yeni bir oda/grup eklendiğinde tüm clientlara bildirecek.. Server tarafından tetikleniyor..
-        hubConnection.On<string>("groupAdded", async (groupName) =>
+        hubConnection.On<Group>("groupAdded", async (group) =>
         {
-            NotificationMessages.Add(CreateToastMessage(ToastType.Info, $"{groupName} adında yeni bir oda oluşturuldu."));
-
+            NotificationMessages.Add(CreateToastMessage(ToastType.Info, $"{group.GroupName} adında yeni bir oda oluşturuldu."));
             await InvokeAsync(StateHasChanged); // UI güncellemesi için InvokeAsync metodu çağırılıyor..
         });
 
         // Sistemdeki grupların/odaların listesi güncellendiğinde server tarafından tetiklenerek güncel liste alınacak..
-        hubConnection.On<List<Group>>("groups", async (groupList) =>
+        hubConnection.On<List<Group>/* , Group, List<Client> */>("groups", (groupList/* , currGroup, clients */) =>
         {
+            // var tempgroup = groupList.Find(Group => Group.GroupName == currGroup.GroupName);
+            // foreach (var client in clients)
+            //     tempgroup.Clients.Add(client);
+
+            // groupList.Find(Group => Group.GroupName == currGroup.GroupName).Clients.AddRange(tempgroup.Clients);
             Groups = groupList;
-            await InvokeAsync(StateHasChanged); // UI güncellemesi..
+            InvokeAsync(StateHasChanged).Wait(); // UI güncellemesi..
+        });
+
+        hubConnection.On<Group>("selectGroup", (groupList/* , currGroup, clients */) =>
+        {
+            selectedGroup = groupList;
+            InvokeAsync(StateHasChanged).Wait(); // UI güncellemesi..
         });
 
         hubConnection.On<string, Client, Client?, string?>("receiveMessage", async (message, senderClient, client, groupName) =>
@@ -414,20 +470,27 @@ else
         // Bir callerın sistemdeki herhangi bir clienta mesaj atma durumunda server tarafından tetiklenecek..
         hubConnection.On<string, string, Client?, string?, DbGroup?>("receiveMessage2", async (message, senderClientName, client, groupName, dbGroup) =>
         {
-            // Bir clientla mesajlaşılıyorsa..
-            if (senderClientName != null)
+            if (dbGroup.Id == Guid.Empty || dbGroup is null)
             {
-                if (dbGroup.Id == Guid.Empty || dbGroup is null)
-                {
-                    var tempGroup = FindGroupByName(groupName);
-                    if (tempGroup is not null)
-                        dbGroup = new() { Id = Guid.Parse(tempGroup.GroupName), Name = tempGroup.GroupName, Members = (ICollection<User>)tempGroup.Clients };
-                }
-                MessageHistory.Add(new Message() { Id = Guid.NewGuid(), Username = senderClientName, Group = dbGroup, Text = message, DateTime = DateTime.Now });
-
-                // FilterUserMessages(selectedClient.Username, false);
-                await InvokeAsync(StateHasChanged); // UI güncellemesi..
+                Group tempGroup = FindGroupByName(groupName);
+                if (tempGroup is not null)
+                    dbGroup = new() { Id = Guid.Parse(tempGroup.GroupName), Name = tempGroup.GroupName, Members = (ICollection<User>)tempGroup.Clients };
             }
+            MessageHistory.Add(new Message() { Id = Guid.NewGuid(), Username = senderClientName, Group = dbGroup, Text = message, DateTime = DateTime.Now });
+
+            // FilterUserMessages(selectedClient.Username, false);
+            await InvokeAsync(StateHasChanged); // UI güncellemesi..
+        });
+
+        hubConnection.On<List<Message>>("LoadMessagesFromDb", async (messageHistory) =>
+        {
+            MessageHistory = messageHistory;
+            await InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<string>("WarningToUser", async (text) =>
+        {
+            NotificationMessages.Add(CreateToastMessage(ToastType.Warning, text));
         });
 
         await hubConnection.StartAsync(); // Hub bağlantısını başlatır..
@@ -461,11 +524,12 @@ else
         return group == null;
     }
 
-    List<ToastMessage> AuthenticationMessages = new List<ToastMessage>();
-
-    // Процесс входа в систему ...
+    /// <summary>
+    /// Процесс входа в систему
+    /// </summary>
     async Task SignIn()
     {
+
         if (!(string.IsNullOrEmpty(CallerUsername) && string.IsNullOrEmpty(RoomId)))
         {
             if (IsUsernameTaken(CallerUsername, RoomId)) // Вход успешно
@@ -474,14 +538,9 @@ else
                 await hubConnection.SendAsync("AddGroupAndUserToAppAndDb", CallerUsername, RoomId);
                 GroupId = Guid.Parse(RoomId);
                 Group? tempGroup = FindGroupByName(RoomId);
-                
-                // hubConnection.SendAsync("AddGroupAsync", GroupNameText).Wait();
-
-                // await hubConnection.SendAsync("AddClientToGroupAsync", GroupNameText);
-
-                // todo: сделать один метод в котором будут использоваться все эти три
 
                 IsAuthenticate = true;
+
                 await InvokeAsync(StateHasChanged); // UI обновление ..
             }
             else
@@ -502,8 +561,6 @@ else
     /// <summary>
     /// Список, который будет держать сообщения, связанные с выбранным клиентом и вызывающим абонентом
     /// </summary>
-    List<ClientMessage> SelectedUserMessages = new List<ClientMessage>();
-
     // Messsages listesinden parametrede gelen clientın attığı ve o usernamee atılan mesajları filtreler..
     void FilterUserMessages(string receiverClientNameOrGroupName, bool IsGroupMessage)
     {
@@ -523,19 +580,8 @@ else
                 SelectedUserMessages = Messages.Where(msg => (msg.ReceiverClientUsernameOrGroupName == receiverClientNameOrGroupName || msg.SenderClientUsername == receiverClientNameOrGroupName) && !msg.IsGroupMessage).ToList();
             }
         }
-
-        #region [Альтернативный код для фильтрации]
-        // // Mesajları filtrelemek için kullanılacak koşulları önceden belirliyorum..
-        // Func<ClientMessage, bool> filterCondition = msg =>
-        //     (IsGroupMessage && msg.IsGroupMessage && msg.ReceiverClientUsernameOrGroupName == receiverClientNameOrGroupName) ||
-        //     (!IsGroupMessage && !msg.IsGroupMessage && (msg.ReceiverClientUsernameOrGroupName == receiverClientNameOrGroupName || msg.SenderClientUsername == receiverClientNameOrGroupName));
-
-        // // Gelen mesajlar bu filtreye göre filtreleniyor
-        // SelectedUserMessages = Message.Where(filterCondition).ToList();
-        #endregion
     }
 
-    private Client selectedClient = new Client();
     private void SelectClient(Client client)
     {
         // Mesaj gönderilecek client bilgisi selectedClienta atanıyor..
@@ -545,13 +591,12 @@ else
         FilterUserMessages(client.Username, false);
     }
 
-    private Group selectedGroup = new Group();
-    private async Task SelectGroup(Group group)
+    private async Task SelectGroupAsync(Group group)
     {
         // Mesaj gönderilecek grup bilgisi selectedGroupa atanıyor..
         selectedGroup = group;
         selectedClient = new Client();
-        await AddClientToGroup(selectedGroup.GroupName);
+        // await AddClientToGroup(selectedGroup.GroupName);
 
         await GetClientsOfGroup(selectedGroup.GroupName);
 
@@ -561,29 +606,85 @@ else
         FilterUserMessages(group.GroupName, true);
     }
 
-    // Caller bir clienta ya da tüm clientlara mesaj gönderecekse serverı tetikler..
-    async Task SendMessageAsync(string message, string? groupName)
+    /// <summary>
+    /// Метод загрузкки файлов выбранных пользователем и передача их на сервер для хранения и синронизации с чатом.
+    /// </summary>
+    /// <param name="e">Объект работы со всеми файлами пользователя</param>
+    /// <remarks>Может быть от 0 до 3 файлов, каждый размером не больше 3МБ</remarks>
+    private async Task LoadFileFromUser(InputFileChangeEventArgs e)
     {
-        // Mesaj yazmadan butona tıklanırsa kodlar çalışmayacak..
-        if (!string.IsNullOrEmpty(message))
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
         {
-            // Grup adı varsa ilgili gruba mesaj gönderilecek..
-            if (!string.IsNullOrEmpty(groupName))
+            isLoading = true;
+            loadedFiles.Clear();
+
+            try
             {
+                var trustedFileName = Path.GetRandomFileName();
+                var path = Path.Combine(Directory.GetCurrentDirectory(),
+                                        Environment.UserName,
+                                        "unsafe_uploads");
+                Directory.CreateDirectory(path);
+                path = Path.Combine(path,
+                    trustedFileName);
+
+                await using FileStream fs = new(path, FileMode.Create);
+
+                await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+                if (file.Size > maxFileSize)
+                    NotificationMessages.Add(CreateToastMessage(ToastType.Warning, $"Максимальный размер файла 3МБ"));
+                else
+                    loadedFiles.Add(file);
+
+            }
+            catch (Exception ex)
+            {
+                NotificationMessages.Add(CreateToastMessage(ToastType.Warning, $"Возникла ошибка при загрузке изображений: {ex}"));
+            }
+
+        }
+
+        await hubConnection.SendAsync("GetFilesToServer", loadedFiles, selectedGroup.GroupName, selectedClient.Username);
+        isLoading = false;
+        NotificationMessages.Add(CreateToastMessage(ToastType.Info, $"Файл загружен"));
+    }
+
+    // Caller bir clienta ya da tüm clientlara mesaj gönderecekse serverı tetikler..
+    private async Task SendMessageAsync(string message, string groupName)
+    {
+        if (isHaveRestrictedSymbols(message))
+            NotificationMessages.Add(CreateToastMessage(ToastType.Info, $"В сообщениях нельзя отправлять ссылки и контакты"));
+        else
+        {
+            // Mesaj yazmadan butona tıklanırsa kodlar çalışmayacak..
+            if (!string.IsNullOrEmpty(message) && !string.IsNullOrEmpty(groupName))
+            {
+                // Grup adı varsa ilgili gruba mesaj gönderilecek..
                 // Serverdaki SendMessageAsync methodu tetiklenerek seçilen gruba mesajın gönderilme işlemi gerçekleştiriliyor..
                 await hubConnection.SendAsync("SendMessageToGroupAsync", groupName, message, CallerUsername);
 
                 // Seçilen grubun adına göre o gruptaki mesajlaşmaları filtreleyerek SelectedUserMessages listesine atar..
                 // FilterUserMessages(groupName, true);
                 StateHasChanged();
+                // Mesaj temizleniyor..
+                TextMessage = string.Empty;
             }
-            // Mesaj temizleniyor..
-            TextMessage = string.Empty;
         }
     }
 
+    /// <summary>
+    /// Проверка на наличие в сообщении ссылок или контактной инфрмации для связи вне чата
+    /// </summary>
+    /// <param name="userInput">Сообщение пользователя</param>
+    /// <returns>true если имеется ли запрещённый текст в сообщении</returns>
+    private bool isHaveRestrictedSymbols(string userInput)
+    {
+        return Regex.IsMatch(userInput, pattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(2));
+    }
+
+
     // Caller bir oda oluştururken tetiklenir..
-    async Task AddGroup(string groupNameText)
+    private async Task AddGroup(string groupNameText)
     {
         // Grup adı yazmadan butona tıklanırsa kodlar çalışmayacak..
         if (!string.IsNullOrEmpty(groupNameText))
@@ -613,17 +714,17 @@ else
     }
 
     // Caller bir odaya girerken tetiklenir..
-    async Task AddClientToGroup(string groupName)
+    private async Task AddClientToGroup(string groupId)
     {
         // Serverdaki AddClientToGroupAsync methodu tetiklenerek seçilen gruba callerın dahil olması sağlanıyor..
-        await hubConnection.SendAsync("AddClientToGroupAsync", groupName);
+        await hubConnection.SendAsync("AddClientToGroupAsync", groupId);
     }
 
     // Tetiklendiğinde ilgili gruba ait tüm clientların listesini döndürür....
-    async Task GetClientsOfGroup(string groupName)
+    private async Task GetClientsOfGroup(string groupId)
     {
         // Serverdaki GetClientsOfGroupAsync methodu tetiklenerek seçilen gruba subscribe olmuş tüm clientların listesini döndürür ve server tarafından clienttaki clients methodu tetiklenir..
-        await hubConnection.SendAsync("GetClientsOfGroupAsync", groupName);
+        await hubConnection.SendAsync("GetClientsOfGroupAsync", groupId);
     }
 
     // Mesaj yazılan inputta Entera basılırsa SendMessageAsync fonksiyonunu tetikler..
@@ -655,20 +756,29 @@ else
             Message = $"{message}",
         };
 
-    async Task LoadMessageHistory(string groupId)
+    /// <summary>
+    /// Загружает историю сообщений чата из БД в память для отображжения
+    /// </summary>
+    /// <param name="groupId">ID чата</param>
+    private async Task LoadMessageHistory(string groupId)
     {
-        MessageHistory = FindGroupByName(groupId)?.MessageHistory;
-        await hubConnection.SendAsync("GetMessagesHistoryAsync", Guid.Parse(groupId));
+        var group = FindGroupByName(groupId);
+        if (group?.MessageHistory != null)
+            MessageHistory = group?.MessageHistory;
+        await hubConnection.SendAsync("GetDbMessagesHistorySortByDecAsync", Guid.Parse(groupId));
     }
 
     /// <summary>
     /// Ищет чат в массиве по его ID
     /// </summary>
-    /// <param name="groupName">ID чата</param>
-    /// <returns>Найденную сущность Group</returns>
-    Group? FindGroupByName(string groupName)
+    /// <param name="groupId">ID чата</param>
+    /// <returns>Найденная сущность Group</returns>
+    private Group? FindGroupByName(string groupId)
     {
-        return Groups.FirstOrDefault(group => group.GroupName == groupName);
+        List<Group> groups = Groups.FindAll(group => group.GroupName == groupId);
+        // var group = Groups.FirstOrDefault(group => group.GroupName == groupName);
+        Group group = groups.FirstOrDefault(tempgroup => tempgroup.Clients.Count > 0);
+        return group;
     }
 }
 <!-- #endregion -->

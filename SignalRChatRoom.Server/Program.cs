@@ -95,11 +95,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-//app.UseEndpoints( endpoints =>
-//{
-//	app.MapHub<ChatHub>( "/chathub" ); // Замените YourHub на имя вашего хаба
-//} );
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/chathub");
+    //app.MapHub<ChatHub>("/chathub"); // Замените YourHub на имя вашего хаба
+});
 
-app.MapHub<ChatHub>("/chathub");
+//app.MapHub<ChatHub>("/chathub");
 
 app.Run();
